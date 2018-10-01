@@ -10,12 +10,15 @@ import android.widget.TextView;
 public class GameActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
     private GestureDetectorCompat mDetector;
     private TextView testTextView;
+    private GameArrow gameArrow;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         testTextView = findViewById(R.id.gameTestText);
         mDetector = new GestureDetectorCompat(this, this);
+        gameArrow = findViewById(R.id.gameArrow);
+
     }
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
@@ -24,6 +27,7 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
         }
         return super.onTouchEvent(motionEvent);
     }
+    private int i = 0;
     @Override
     public boolean onDown(MotionEvent motionEvent) {
         return true;
