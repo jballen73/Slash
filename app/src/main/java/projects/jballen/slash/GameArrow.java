@@ -18,7 +18,7 @@ import static projects.jballen.slash.Constants.TOP_ARROW_HEIGHT;
  * TODO: document your custom view class.
  */
 public class GameArrow extends View {
-    private int mExampleColor = Color.RED; // TODO: use a default from R.color...
+    private int color = Color.BLUE;
     private int directionValue = 8;
     private FlingType direction;
     private Paint arrowPaint;
@@ -42,16 +42,16 @@ public class GameArrow extends View {
         final TypedArray a = getContext().obtainStyledAttributes(
                 attrs, R.styleable.GameArrow, defStyle, 0);
 
-        mExampleColor = a.getColor(
+        color = a.getColor(
                 R.styleable.GameArrow_color,
-                mExampleColor);
+                color);
         directionValue = a.getInt(R.styleable.GameArrow_arrowDirection, directionValue);
         direction = FlingType.getTypeFromIndex(directionValue);
 
 
         a.recycle();
         arrowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-        arrowPaint.setColor(mExampleColor);
+        arrowPaint.setColor(color);
         arrowPaint.setStyle(Paint.Style.FILL);
 
         // Update TextPaint and text measurements from attributes
@@ -112,7 +112,7 @@ public class GameArrow extends View {
      * @return The example color attribute value.
      */
     public int getExampleColor() {
-        return mExampleColor;
+        return color;
     }
 
     /**
@@ -122,7 +122,7 @@ public class GameArrow extends View {
      * @param exampleColor The example color attribute value to use.
      */
     public void setExampleColor(int exampleColor) {
-        mExampleColor = exampleColor;
+        color = exampleColor;
         invalidateTextPaintAndMeasurements();
     }
     public void setDirection(int direction) {

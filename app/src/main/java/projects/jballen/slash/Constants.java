@@ -1,7 +1,7 @@
 package projects.jballen.slash;
 
 class Constants {
-    static final int MINIMUM_VELOCITY = 4000;
+    static final int MINIMUM_VELOCITY = 2500;
     static final double STRAIGHT_DEADBAND = .25;
     static final double DIAGONAL_DEADBAND = .6;
     static final float BASE_ARROW_WIDTH = 50f;

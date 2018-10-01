@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.TextView;
 
 public class GameActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
@@ -55,7 +56,15 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
 
     @Override
     public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
-        testTextView.setText(getString(FlingInterpreter.getFlingType(v, v1).getFlingTextId()));
+        FlingType flingType = (FlingInterpreter.getFlingType(v, v1));
+        if (flingType == FlingType.NONE) {
+            gameArrow.setVisibility(View.INVISIBLE);
+        } else {
+            gameArrow.setVisibility(View.VISIBLE);
+            gameArrow.setDirection(flingType.ordinal());
+            gameArrow.invalidate();
+        }
+
         return true;
     }
 }
