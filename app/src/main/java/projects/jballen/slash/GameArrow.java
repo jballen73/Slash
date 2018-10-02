@@ -78,6 +78,7 @@ public class GameArrow extends View {
         canvas.save();
         canvas.rotate(direction.getRotateAngle(), contentWidth/2, (contentHeight + BASE_ARROW_HEIGHT + TOP_ARROW_HEIGHT)/2);
         // Draw the arrow.
+        arrowPaint.setColor(color);
         Path arrowPath = new Path();
         arrowPath.moveTo((contentWidth)/2, (contentHeight)/2);
         arrowPath.rLineTo(BASE_ARROW_WIDTH/2, BASE_ARROW_HEIGHT);
@@ -119,10 +120,10 @@ public class GameArrow extends View {
      * Sets the view's example color attribute value. In the example view, this color
      * is the font color.
      *
-     * @param exampleColor The example color attribute value to use.
+     * @param color The example color attribute value to use.
      */
-    public void setExampleColor(int exampleColor) {
-        color = exampleColor;
+    public void setColor(int color) {
+        this.color = color;
         invalidateTextPaintAndMeasurements();
     }
     public void setDirection(int direction) {

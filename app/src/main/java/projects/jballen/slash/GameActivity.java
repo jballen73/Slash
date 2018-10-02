@@ -78,8 +78,9 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
         gameService.startGame();
     }
     @Override
-    public void setArrow(int direction) {
-        gameArrow.setDirection(direction);
+    public void setArrow(ArrowAttributes attributes) {
+        gameArrow.setDirection(attributes.getArrowDirection().ordinal());
+        gameArrow.setColor(attributes.getColor());
         gameArrow.invalidate();
     }
     @Override

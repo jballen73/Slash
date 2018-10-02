@@ -1,6 +1,6 @@
 package projects.jballen.slash;
 
 public interface GameCallbackInterface {
-    void setArrow(int direction);
+    void setArrow(ArrowAttributes attributes);
     void updateProgressBar(int newValue);
 }

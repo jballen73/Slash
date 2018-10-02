@@ -1,7 +1,5 @@
 package projects.jballen.slash;
 
-import android.app.Activity;
-
 import static projects.jballen.slash.Constants.DOWN_LEFT_ROTATION;
 import static projects.jballen.slash.Constants.DOWN_RIGHT_ROTATION;
 import static projects.jballen.slash.Constants.DOWN_ROTATION;
@@ -30,4 +28,26 @@ public enum FlingType {
     public int getFlingTextId() {return flingTextId;}
     public float getRotateAngle() {return rotateAngle;}
     public static FlingType getTypeFromIndex(int index) {return values()[index];}
+    public static FlingType getOpposite(FlingType flingType){
+        switch(flingType) {
+            case DOWN:
+                return UP;
+            case DOWN_LEFT:
+                return UP_RIGHT;
+            case LEFT:
+                return RIGHT;
+            case UP_LEFT:
+                return DOWN_RIGHT;
+            case UP:
+                return DOWN;
+            case UP_RIGHT:
+                return DOWN_LEFT;
+            case RIGHT:
+                return LEFT;
+            case DOWN_RIGHT:
+                return UP_LEFT;
+            default:
+                return NONE;
+        }
+    }
 }

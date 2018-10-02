@@ -16,4 +16,8 @@ class Constants {
     static final float UP_RIGHT_ROTATION = 225;
     static final float RIGHT_ROTATION = 270;
     static final float DOWN_RIGHT_ROTATION = 315;
+    static final int MAX_RED_SCORE = 10;
+    static final int SUCCESS_INCREASE = 10;
+    static final int REGULAR_FAILURE_DECREASE = -5;
+    static final int RED_FAILURE_DECREASE = -15;
 }

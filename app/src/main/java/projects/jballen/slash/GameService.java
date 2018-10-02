@@ -9,19 +9,25 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static projects.jballen.slash.Constants.MAX_RED_SCORE;
+import static projects.jballen.slash.Constants.RED_FAILURE_DECREASE;
+import static projects.jballen.slash.Constants.REGULAR_FAILURE_DECREASE;
+import static projects.jballen.slash.Constants.SUCCESS_INCREASE;
+
 public class GameService extends Service {
     private final LocalBinder binder = new LocalBinder();
     private GameCallbackInterface callbackInterface;
     private Timer timer;
     private int barAmount;
-    private FlingType currentArrowDirection;
+    private ArrowAttributes currentArrow;
+    private int redCount = 0;
     private boolean timerRunning = false;
     private final Random gen = new Random();
     public GameService() {
     }
     public void startGame() {
-        currentArrowDirection = FlingType.RIGHT;
-        callbackInterface.setArrow(currentArrowDirection.ordinal());
+        currentArrow = new ArrowAttributes(FlingType.RIGHT, ArrowType.REGULAR);
+        callbackInterface.setArrow(currentArrow);
         startTimer();
     }
     public void startTimer() {
@@ -49,25 +55,59 @@ public class GameService extends Service {
     }
     public void handleFling(FlingType fling) {
         if (timerRunning) {
-            if (fling != FlingType.NONE) {
-                if (fling == currentArrowDirection) {
-                    barAmount = Math.min(barAmount + 10, 100);
+            if (currentArrow.getArrowType() != ArrowType.NOT && fling != FlingType.NONE) {
+                if (fling == currentArrow.getCorrectDirection()) {
+                    barAmount = Math.min(barAmount + SUCCESS_INCREASE, 100);
                     callbackInterface.updateProgressBar(barAmount);
-                    int newDirection = gen.nextInt(8);
-                    currentArrowDirection = FlingType.getTypeFromIndex(newDirection);
-                    callbackInterface.setArrow(newDirection);
+                    ArrowAttributes newArrow = makeNewArrow();
+                    currentArrow = newArrow;
+                    callbackInterface.setArrow(newArrow);
                 } else {
-                    barAmount = Math.max(barAmount - 5, 0);
+                    barAmount = Math.max(barAmount + REGULAR_FAILURE_DECREASE, 0);
                     callbackInterface.updateProgressBar(barAmount);
                 }
+            } else if (fling != FlingType.NONE) {
+                barAmount = Math.max(barAmount + RED_FAILURE_DECREASE, 0);
+                callbackInterface.updateProgressBar(barAmount);
             }
         }
+    }
+    private ArrowAttributes makeNewArrow() {
+        int newDirection = gen.nextInt(8);
+        int type = gen.nextInt(7);
+        ArrowAttributes newArrow;
+        if (type < 4) {
+            newArrow = new ArrowAttributes(FlingType.getTypeFromIndex(newDirection),
+                    ArrowType.REGULAR);
+        } else if (type < 6) {
+            newArrow = new ArrowAttributes(FlingType.getTypeFromIndex(newDirection),
+                    ArrowType.REVERSE);
+        } else {
+            newArrow = new ArrowAttributes(FlingType.getTypeFromIndex(newDirection),
+                    ArrowType.NOT);
+        }
+        return newArrow;
     }
     TimerTask gameTask = new TimerTask() {
         @Override
         public void run() {
-            barAmount -= 1;
+            if (currentArrow.getArrowType() == ArrowType.NOT) {
+                barAmount = Math.min(barAmount + 1, 100);
+                redCount++;
+                if (redCount >= MAX_RED_SCORE) {
+                    currentArrow = makeNewArrow();
+                    callbackInterface.setArrow(currentArrow);
+                    redCount = 0;
+                }
+            } else {
+                barAmount -= 1;
+            }
             callbackInterface.updateProgressBar(barAmount);
         }
     };
+    public enum ArrowType {
+        REGULAR,
+        REVERSE,
+        NOT;
+    }
 }
