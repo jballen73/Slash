@@ -10,31 +10,42 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ProgressBar;
 
 public class GameActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GameCallbackInterface{
     private GestureDetectorCompat mDetector;
     private GameArrow gameArrow;
     private GameService gameService;
     private boolean isBound = false;
+    private ProgressBar gameTimerBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
         mDetector = new GestureDetectorCompat(this, this);
         gameArrow = findViewById(R.id.gameArrow);
-
+        gameTimerBar = findViewById(R.id.gameTimerBar);
     }
     @Override
     protected void onStart() {
         super.onStart();
         Intent gameIntent = new Intent(this, GameService.class);
         bindService(gameIntent, gameServiceConnection, BIND_AUTO_CREATE);
+
+
     }
     @Override
     protected void onStop() {
         super.onStop();
         unbindService(gameServiceConnection);
         isBound = false;
+    }
+    @Override
+    public void updateProgressBar(int newValue) {
+        gameTimerBar.setProgress(newValue);
+        if (newValue == 0) {
+            gameService.stopTimer();
+        }
     }
     private ServiceConnection gameServiceConnection = new ServiceConnection() {
         @Override
@@ -43,6 +54,7 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
             gameService = binder.getService();
             isBound = true;
             gameService.setCallbackInterface(GameActivity.this);
+            gameService.startTimer();
         }
 
         @Override
