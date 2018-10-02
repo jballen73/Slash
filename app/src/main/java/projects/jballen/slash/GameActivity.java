@@ -1,24 +1,57 @@
 package projects.jballen.slash;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 
-public class GameActivity extends AppCompatActivity implements GestureDetector.OnGestureListener{
+public class GameActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GameCallbackInterface{
     private GestureDetectorCompat mDetector;
-    private TextView testTextView;
     private GameArrow gameArrow;
+    private GameService gameService;
+    private boolean isBound = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
-        testTextView = findViewById(R.id.gameTestText);
         mDetector = new GestureDetectorCompat(this, this);
         gameArrow = findViewById(R.id.gameArrow);
+
+    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Intent gameIntent = new Intent(this, GameService.class);
+        bindService(gameIntent, gameServiceConnection, BIND_AUTO_CREATE);
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unbindService(gameServiceConnection);
+        isBound = false;
+    }
+    private ServiceConnection gameServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            GameService.LocalBinder binder = (GameService.LocalBinder) iBinder;
+            gameService = binder.getService();
+            isBound = true;
+            gameService.setCallbackInterface(GameActivity.this);
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            isBound = false;
+        }
+    };
+    @Override
+    public void setArrow(int direction) {
 
     }
     @Override
