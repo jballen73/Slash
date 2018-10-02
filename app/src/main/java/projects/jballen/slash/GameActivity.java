@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ProgressBar;
 
 public class GameActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GameCallbackInterface{
@@ -18,6 +19,7 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     private GameService gameService;
     private boolean isBound = false;
     private ProgressBar gameTimerBar;
+    private Button startButton;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +27,14 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
         mDetector = new GestureDetectorCompat(this, this);
         gameArrow = findViewById(R.id.gameArrow);
         gameTimerBar = findViewById(R.id.gameTimerBar);
+        gameTimerBar.setVisibility(View.INVISIBLE);
+        startButton = findViewById(R.id.gameStartButton);
+        startButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startGame();
+            }
+        });
     }
     @Override
     protected void onStart() {
@@ -54,7 +64,6 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
             gameService = binder.getService();
             isBound = true;
             gameService.setCallbackInterface(GameActivity.this);
-            gameService.startTimer();
         }
 
         @Override
@@ -62,9 +71,16 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
             isBound = false;
         }
     };
+    private void startGame() {
+        startButton.setVisibility(View.GONE);
+        gameTimerBar.setVisibility(View.VISIBLE);
+        gameArrow.setVisibility(View.VISIBLE);
+        gameService.startGame();
+    }
     @Override
     public void setArrow(int direction) {
-
+        gameArrow.setDirection(direction);
+        gameArrow.invalidate();
     }
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
@@ -102,14 +118,7 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     @Override
     public boolean onFling(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
         FlingType flingType = (FlingInterpreter.getFlingType(v, v1));
-        if (flingType == FlingType.NONE) {
-            gameArrow.setVisibility(View.INVISIBLE);
-        } else {
-            gameArrow.setVisibility(View.VISIBLE);
-            gameArrow.setDirection(flingType.ordinal());
-            gameArrow.invalidate();
-        }
-
+        gameService.handleFling(flingType);
         return true;
     }
 }

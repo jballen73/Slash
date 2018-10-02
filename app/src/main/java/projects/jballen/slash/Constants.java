@@ -4,10 +4,10 @@ class Constants {
     static final int MINIMUM_VELOCITY = 2500;
     static final double STRAIGHT_DEADBAND = .25;
     static final double DIAGONAL_DEADBAND = .6;
-    static final float BASE_ARROW_WIDTH = 50f;
-    static final float BASE_ARROW_HEIGHT = 400f;
-    static final float TOP_ARROW_EXTENSION = 20;
-    static final float TOP_ARROW_HEIGHT = 60;
+    static final float BASE_ARROW_WIDTH = 70f;
+    static final float BASE_ARROW_HEIGHT = 500f;
+    static final float TOP_ARROW_EXTENSION = 30;
+    static final float TOP_ARROW_HEIGHT = 80;
     static final float DOWN_ROTATION = 0;
     static final float DOWN_LEFT_ROTATION = 45;
     static final float LEFT_ROTATION = 90;
