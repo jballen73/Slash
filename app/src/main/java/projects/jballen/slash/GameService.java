@@ -4,11 +4,13 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
+import android.util.Log;
 
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static projects.jballen.slash.Constants.LOG_STRING_DIRECTION;
 import static projects.jballen.slash.Constants.MAX_RED_SCORE;
 import static projects.jballen.slash.Constants.RED_FAILURE_DECREASE;
 import static projects.jballen.slash.Constants.REGULAR_FAILURE_DECREASE;
@@ -54,6 +56,7 @@ public class GameService extends Service {
         this.callbackInterface = callbackInterface;
     }
     public void handleFling(FlingType fling) {
+        Log.d(LOG_STRING_DIRECTION, fling.name());
         if (timerRunning) {
             if (currentArrow.getArrowType() != ArrowType.NOT && fling != FlingType.NONE) {
                 if (fling == currentArrow.getCorrectDirection()) {
@@ -104,6 +107,7 @@ public class GameService extends Service {
             }
             callbackInterface.updateProgressBar(barAmount);
         }
+
     };
     public enum ArrowType {
         REGULAR,

@@ -2,7 +2,7 @@ package projects.jballen.slash;
 
 class Constants {
     static final int MINIMUM_VELOCITY = 2500;
-    static final double STRAIGHT_DEADBAND = .25;
+    static final double STRAIGHT_DEADBAND = .30;
     static final double DIAGONAL_DEADBAND = .6;
     static final float BASE_ARROW_WIDTH = 70f;
     static final float BASE_ARROW_HEIGHT = 500f;
@@ -20,4 +20,5 @@ class Constants {
     static final int SUCCESS_INCREASE = 10;
     static final int REGULAR_FAILURE_DECREASE = -5;
     static final int RED_FAILURE_DECREASE = -15;
+    static final String LOG_STRING_DIRECTION = "DetectedFlingDirection";
 }
