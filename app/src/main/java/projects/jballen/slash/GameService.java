@@ -11,9 +11,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static projects.jballen.slash.Constants.LOG_STRING_DIRECTION;
-import static projects.jballen.slash.Constants.MAX_RED_SCORE;
-import static projects.jballen.slash.Constants.RED_FAILURE_DECREASE;
 import static projects.jballen.slash.Constants.REGULAR_FAILURE_DECREASE;
+import static projects.jballen.slash.Constants.STARTING_MAX_RED_SCORE;
 import static projects.jballen.slash.Constants.SUCCESS_INCREASE;
 
 public class GameService extends Service {
@@ -28,6 +27,7 @@ public class GameService extends Service {
     private TimerTask currentGameTask;
     private int currentPeriod = 100;
     private int score;
+    private int maxRedScore;
     public GameService() {
     }
     public void startGame() {
@@ -35,6 +35,7 @@ public class GameService extends Service {
         callbackInterface.setArrow(currentArrow);
         barAmount = 100;
         score = 0;
+        maxRedScore = STARTING_MAX_RED_SCORE;
         callbackInterface.updateScore(score);
         timer = new Timer();
         currentGameTask = createNewGameTask();
@@ -88,8 +89,12 @@ public class GameService extends Service {
                     callbackInterface.updateProgressBar(barAmount);
                 }
             } else if (fling != FlingType.NONE) {
-                barAmount = Math.max(barAmount + RED_FAILURE_DECREASE, 0);
+                redCount = 0;
+                barAmount = Math.max(barAmount + REGULAR_FAILURE_DECREASE, 0);
                 callbackInterface.updateProgressBar(barAmount);
+                ArrowAttributes newArrow = makeNewArrow();
+                currentArrow = newArrow;
+                callbackInterface.setArrow(newArrow);
             }
         }
     }
@@ -114,12 +119,15 @@ public class GameService extends Service {
             @Override
             public void run() {
                 if (currentArrow.getArrowType() == ArrowType.NOT) {
-                    barAmount = Math.min(barAmount + 1, 100);
+                    barAmount = Math.max(barAmount - 1, 0);
                     redCount++;
-                    if (redCount >= MAX_RED_SCORE) {
+                    if (redCount >= maxRedScore) {
                         currentArrow = makeNewArrow();
                         callbackInterface.setArrow(currentArrow);
                         redCount = 0;
+                        barAmount = Math.min(barAmount + maxRedScore + SUCCESS_INCREASE, 100);
+                        score++;
+                        callbackInterface.updateScore(score);
                     }
                 } else {
                     barAmount -= 1;
