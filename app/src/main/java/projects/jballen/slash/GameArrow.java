@@ -92,14 +92,6 @@ public class GameArrow extends View {
 
 
     }
-    /**
-     * Gets the example color attribute value.
-     *
-     * @return The example color attribute value.
-     */
-    public int getExampleColor() {
-        return color;
-    }
 
     /**
      * Sets the view's example color attribute value. In the example view, this color
@@ -117,9 +109,7 @@ public class GameArrow extends View {
         invalidateTextPaintAndMeasurements();
 
     }
-    public FlingType getDirection() {
-        return direction;
-    }
+
 
 
 

@@ -12,6 +12,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 public class GameActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GameCallbackInterface{
     private GestureDetectorCompat mDetector;
@@ -20,6 +21,7 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     private boolean isBound = false;
     private ProgressBar gameTimerBar;
     private Button startButton;
+    private TextView gameScore;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +37,7 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
                 startGame();
             }
         });
+        gameScore = findViewById(R.id.scoreDisplay);
     }
     @Override
     protected void onStart() {
@@ -75,7 +78,17 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
         startButton.setVisibility(View.GONE);
         gameTimerBar.setVisibility(View.VISIBLE);
         gameArrow.setVisibility(View.VISIBLE);
+        gameScore.setVisibility(View.VISIBLE);
         gameService.startGame();
+    }
+    @Override
+    public void updateScore(final int newValue) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                gameScore.setText(getString(R.string.game_score, Integer.toString(newValue)));
+            }
+        });
     }
     @Override
     public void setArrow(final ArrowAttributes attributes) {
@@ -96,7 +109,6 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
         }
         return super.onTouchEvent(motionEvent);
     }
-    private int i = 0;
     @Override
     public boolean onDown(MotionEvent motionEvent) {
         return true;

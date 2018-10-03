@@ -25,22 +25,34 @@ public class GameService extends Service {
     private int redCount = 0;
     private boolean timerRunning = false;
     private final Random gen = new Random();
+    private TimerTask currentGameTask;
+    private int currentPeriod = 100;
+    private int score;
     public GameService() {
     }
     public void startGame() {
         currentArrow = new ArrowAttributes(FlingType.RIGHT, ArrowType.REGULAR);
         callbackInterface.setArrow(currentArrow);
+        barAmount = 100;
+        score = 0;
+        callbackInterface.updateScore(score);
+        timer = new Timer();
+        currentGameTask = createNewGameTask();
         startTimer();
     }
     public void startTimer() {
-        timer = new Timer();
-        barAmount = 100;
-        timer.schedule(gameTask, 0, 100);
+        timer.schedule(currentGameTask, 0, 100);
         timerRunning = true;
+    }
+    public void reStartTimer() {
+        currentGameTask.cancel();
+        currentGameTask = createNewGameTask();
+        timer.schedule(currentGameTask, 0 , currentPeriod);
     }
     public void stopTimer() {
         timer.cancel();
-        gameTask.cancel();
+        timer.purge();
+        currentGameTask.cancel();
         timerRunning = false;
     }
     @Override
@@ -61,6 +73,12 @@ public class GameService extends Service {
             if (currentArrow.getArrowType() != ArrowType.NOT && fling != FlingType.NONE) {
                 if (fling == currentArrow.getCorrectDirection()) {
                     barAmount = Math.min(barAmount + SUCCESS_INCREASE, 100);
+                    score++;
+                    callbackInterface.updateScore(score);
+                    if (score >= 10) {
+                        currentPeriod = 75;
+                        reStartTimer();
+                    }
                     callbackInterface.updateProgressBar(barAmount);
                     ArrowAttributes newArrow = makeNewArrow();
                     currentArrow = newArrow;
@@ -91,24 +109,28 @@ public class GameService extends Service {
         }
         return newArrow;
     }
-    TimerTask gameTask = new TimerTask() {
-        @Override
-        public void run() {
-            if (currentArrow.getArrowType() == ArrowType.NOT) {
-                barAmount = Math.min(barAmount + 1, 100);
-                redCount++;
-                if (redCount >= MAX_RED_SCORE) {
-                    currentArrow = makeNewArrow();
-                    callbackInterface.setArrow(currentArrow);
-                    redCount = 0;
+    TimerTask createNewGameTask() {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                if (currentArrow.getArrowType() == ArrowType.NOT) {
+                    barAmount = Math.min(barAmount + 1, 100);
+                    redCount++;
+                    if (redCount >= MAX_RED_SCORE) {
+                        currentArrow = makeNewArrow();
+                        callbackInterface.setArrow(currentArrow);
+                        redCount = 0;
+                    }
+                } else {
+                    barAmount -= 1;
                 }
-            } else {
-                barAmount -= 1;
+                callbackInterface.updateProgressBar(barAmount);
             }
-            callbackInterface.updateProgressBar(barAmount);
-        }
 
-    };
+        };
+    }
+
+
     public enum ArrowType {
         REGULAR,
         REVERSE,
