@@ -31,7 +31,7 @@ public class GameService extends Service {
     public GameService() {
     }
     public void startGame() {
-        currentArrow = new ArrowAttributes(FlingType.RIGHT, ArrowType.REGULAR);
+        currentArrow = makeNewArrow();
         callbackInterface.setArrow(currentArrow);
         barAmount = 100;
         score = 0;
@@ -74,12 +74,7 @@ public class GameService extends Service {
             if (currentArrow.getArrowType() != ArrowType.NOT && fling != FlingType.NONE) {
                 if (fling == currentArrow.getCorrectDirection()) {
                     barAmount = Math.min(barAmount + SUCCESS_INCREASE, 100);
-                    score++;
-                    callbackInterface.updateScore(score);
-                    if (score >= 10) {
-                        currentPeriod = 75;
-                        reStartTimer();
-                    }
+                    increaseScore();
                     callbackInterface.updateProgressBar(barAmount);
                     ArrowAttributes newArrow = makeNewArrow();
                     currentArrow = newArrow;
@@ -126,8 +121,7 @@ public class GameService extends Service {
                         callbackInterface.setArrow(currentArrow);
                         redCount = 0;
                         barAmount = Math.min(barAmount + maxRedScore + SUCCESS_INCREASE, 100);
-                        score++;
-                        callbackInterface.updateScore(score);
+                        increaseScore();
                     }
                 } else {
                     barAmount -= 1;
@@ -137,7 +131,14 @@ public class GameService extends Service {
 
         };
     }
-
+    private void increaseScore() {
+        score++;
+        callbackInterface.updateScore(score);
+        if (score > 0 && score % 10 == 0 && currentPeriod > 60) {
+            currentPeriod -= 5;
+            reStartTimer();
+        }
+    }
 
     public enum ArrowType {
         REGULAR,
