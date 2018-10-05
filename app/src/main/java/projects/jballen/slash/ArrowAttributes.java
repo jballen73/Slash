@@ -7,7 +7,7 @@ public class ArrowAttributes {
     private FlingType correctDirection;
     private GameService.ArrowType arrowType;
     private int color;
-    public ArrowAttributes(FlingType direction, GameService.ArrowType type) {
+    public ArrowAttributes(FlingType direction, GameService.ArrowType type, boolean isColorblind) {
         arrowDirection = direction;
         arrowType = type;
         switch(arrowType) {
@@ -21,7 +21,7 @@ public class ArrowAttributes {
                 break;
             case NOT:
                 correctDirection = FlingType.NONE;
-                color = Color.RED;
+                color = (isColorblind) ? Color.MAGENTA : Color.RED;
                 break;
         }
 

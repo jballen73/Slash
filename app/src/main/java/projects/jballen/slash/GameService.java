@@ -28,9 +28,11 @@ public class GameService extends Service {
     private int currentPeriod = 100;
     private int score;
     private int maxRedScore;
+    private boolean isColorblind;
     public GameService() {
     }
     public void startGame() {
+        isColorblind = callbackInterface.isColorblind();
         currentArrow = makeNewArrow();
         callbackInterface.setArrow(currentArrow);
         barAmount = 100;
@@ -99,13 +101,13 @@ public class GameService extends Service {
         ArrowAttributes newArrow;
         if (type < 4) {
             newArrow = new ArrowAttributes(FlingType.getTypeFromIndex(newDirection),
-                    ArrowType.REGULAR);
+                    ArrowType.REGULAR, isColorblind);
         } else if (type < 6) {
             newArrow = new ArrowAttributes(FlingType.getTypeFromIndex(newDirection),
-                    ArrowType.REVERSE);
+                    ArrowType.REVERSE, isColorblind);
         } else {
             newArrow = new ArrowAttributes(FlingType.getTypeFromIndex(newDirection),
-                    ArrowType.NOT);
+                    ArrowType.NOT, isColorblind);
         }
         return newArrow;
     }

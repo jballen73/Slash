@@ -19,6 +19,7 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     private GameArrow gameArrow;
     private GameService gameService;
     private boolean isBound = false;
+    private boolean colorblindMode;
     private ProgressBar gameTimerBar;
     private Button startButton;
     private TextView gameScore;
@@ -38,6 +39,7 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
             }
         });
         gameScore = findViewById(R.id.scoreDisplay);
+        colorblindMode = getIntent().getBooleanExtra(WelcomeActivity.COLORBLIND_MODE, false);
     }
     @Override
     protected void onStart() {
@@ -59,6 +61,10 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
         if (newValue == 0) {
             gameService.stopTimer();
         }
+    }
+    @Override
+    public boolean isColorblind() {
+        return colorblindMode;
     }
     private ServiceConnection gameServiceConnection = new ServiceConnection() {
         @Override

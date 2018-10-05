@@ -12,4 +12,5 @@
     <string name="direction_none">None</string>
     <string name="game_start">Start</string>
     <string name="game_score">Score: %1$s</string>
+    <string name="colorblind_button_toggle">Colorblind Mode</string>
 </resources>
