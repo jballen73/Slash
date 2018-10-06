@@ -86,6 +86,7 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     public void goToGameOver(int finalScore) {
         Intent goToGameOverIntent = new Intent(this, GameOverActivity.class);
         goToGameOverIntent.putExtra(FINAL_GAME_SCORE, finalScore);
+        goToGameOverIntent.putExtra(WelcomeActivity.COLORBLIND_MODE, colorblindMode);
         startActivity(goToGameOverIntent);
     }
     @Override

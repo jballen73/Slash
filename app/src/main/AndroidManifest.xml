@@ -23,7 +23,8 @@
             android:enabled="true"
             android:exported="true" />
 
-        <activity android:name=".GameOverActivity"></activity>
+        <activity android:name=".GameOverActivity" />
+        <activity android:name=".InstructionsActivity"></activity>
     </application>
 
 </manifest>

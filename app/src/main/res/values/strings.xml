@@ -15,4 +15,8 @@
     <string name="colorblind_button_toggle">Colorblind Mode</string>
     <string name="game_over_text">Game Over</string>
     <string name="back_to_welcome">Main Menu</string>
+    <string name="regular_arrow_instructions">Swipe blue arrows!</string>
+    <string name="reverse_arrow_instructions">Swipe green arrows backwards!</string>
+    <string name="not_arrow_instructions">Don\'t swipe %1$s arrows!</string>
+    <string name="how_to_play">How to Play</string>
 </resources>
