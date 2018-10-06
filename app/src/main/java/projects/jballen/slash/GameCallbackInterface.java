@@ -6,4 +6,6 @@ public interface GameCallbackInterface {
     void updateScore(int newValue);
     boolean isColorblind();
     void goToGameOver(int finalScore);
+    void playSuccessSound(GameService.ArrowType newType);
+    void playFailureSound();
 }

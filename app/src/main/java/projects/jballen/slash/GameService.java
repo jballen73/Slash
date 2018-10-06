@@ -82,12 +82,15 @@ public class GameService extends Service {
                     barAmount = Math.min(barAmount + SUCCESS_INCREASE, 100);
                     increaseScore();
                     callbackInterface.updateProgressBar(barAmount);
-                    ArrowAttributes newArrow = makeNewArrow();
-                    currentArrow = newArrow;
-                    callbackInterface.setArrow(newArrow);
+                    currentArrow = makeNewArrow();
+                    callbackInterface.setArrow(currentArrow);
+                    callbackInterface.playSuccessSound(currentArrow.getArrowType());
                 } else {
                     barAmount = Math.max(barAmount + REGULAR_FAILURE_DECREASE, 0);
                     callbackInterface.updateProgressBar(barAmount);
+                    currentArrow = makeNewArrow();
+                    callbackInterface.setArrow(currentArrow);
+                    callbackInterface.playFailureSound();
                 }
             } else if (fling != FlingType.NONE) {
                 redCount = 0;
@@ -96,6 +99,7 @@ public class GameService extends Service {
                 ArrowAttributes newArrow = makeNewArrow();
                 currentArrow = newArrow;
                 callbackInterface.setArrow(newArrow);
+                callbackInterface.playFailureSound();
             }
         }
     }
@@ -128,6 +132,7 @@ public class GameService extends Service {
                         redCount = 0;
                         barAmount = Math.min(barAmount + maxRedScore + SUCCESS_INCREASE, 100);
                         increaseScore();
+                        callbackInterface.playSuccessSound(currentArrow.getArrowType());
                     }
                 } else {
                     barAmount -= 1;

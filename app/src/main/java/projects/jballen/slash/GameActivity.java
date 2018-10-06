@@ -3,6 +3,7 @@ package projects.jballen.slash;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.view.GestureDetectorCompat;
@@ -24,6 +25,12 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     private Button startButton;
     private TextView gameScore;
     public static final String FINAL_GAME_SCORE = "endOfGameScore";
+
+    private MediaPlayer highSuccessMediaPlayer;
+    private MediaPlayer midSuccessMediaPlayer;
+    private MediaPlayer lowSuccessMediaPlayer;
+    private MediaPlayer failureMediaPlayer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +48,10 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
         });
         gameScore = findViewById(R.id.scoreDisplay);
         colorblindMode = getIntent().getBooleanExtra(WelcomeActivity.COLORBLIND_MODE, false);
+        highSuccessMediaPlayer = MediaPlayer.create(this, R.raw.slash_success_high);
+        midSuccessMediaPlayer = MediaPlayer.create(this, R.raw.slash_success_mid);
+        lowSuccessMediaPlayer = MediaPlayer.create(this, R.raw.slash_success_low);
+        failureMediaPlayer = MediaPlayer.create(this, R.raw.slash_failure);
     }
     @Override
     protected void onStart() {
@@ -53,6 +64,14 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     @Override
     protected void onStop() {
         super.onStop();
+        highSuccessMediaPlayer.release();
+        midSuccessMediaPlayer.release();
+        lowSuccessMediaPlayer.release();
+        failureMediaPlayer.release();
+        highSuccessMediaPlayer = null;
+        midSuccessMediaPlayer = null;
+        lowSuccessMediaPlayer = null;
+        failureMediaPlayer = null;
         unbindService(gameServiceConnection);
         isBound = false;
     }
@@ -72,6 +91,24 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     @Override
     public boolean isColorblind() {
         return colorblindMode;
+    }
+    @Override
+    public void playSuccessSound(GameService.ArrowType newType) {
+        switch(newType) {
+            case REGULAR:
+                midSuccessMediaPlayer.start();
+                break;
+            case REVERSE:
+                highSuccessMediaPlayer.start();
+                break;
+            case NOT:
+                lowSuccessMediaPlayer.start();
+                break;
+        }
+    }
+    @Override
+    public void playFailureSound() {
+        failureMediaPlayer.start();
     }
     private ServiceConnection gameServiceConnection = new ServiceConnection() {
         @Override
