@@ -11,6 +11,8 @@
     <string name="direction_down">Down</string>
     <string name="direction_none">None</string>
     <string name="game_start">Start</string>
-    <string name="game_score">Score: %1$s</string>
+    <string name="game_score">Score: %1$d</string>
     <string name="colorblind_button_toggle">Colorblind Mode</string>
+    <string name="game_over_text">Game Over</string>
+    <string name="back_to_welcome">Main Menu</string>
 </resources>

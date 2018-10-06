@@ -21,7 +21,9 @@
         <service
             android:name=".GameService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true" />
+
+        <activity android:name=".GameOverActivity"></activity>
     </application>
 
 </manifest>

@@ -52,7 +52,11 @@ public class GameService extends Service {
         currentGameTask = createNewGameTask();
         timer.schedule(currentGameTask, 0 , currentPeriod);
     }
-    public void stopTimer() {
+    public void stopGame() {
+        stopTimer();
+        callbackInterface.goToGameOver(score);
+    }
+    private void stopTimer() {
         timer.cancel();
         timer.purge();
         currentGameTask.cancel();

@@ -5,4 +5,5 @@ public interface GameCallbackInterface {
     void updateProgressBar(int newValue);
     void updateScore(int newValue);
     boolean isColorblind();
+    void goToGameOver(int finalScore);
 }

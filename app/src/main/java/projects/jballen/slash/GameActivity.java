@@ -23,6 +23,7 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     private ProgressBar gameTimerBar;
     private Button startButton;
     private TextView gameScore;
+    public static final String FINAL_GAME_SCORE = "endOfGameScore";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -59,8 +60,14 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     public void updateProgressBar(int newValue) {
         gameTimerBar.setProgress(newValue);
         if (newValue == 0) {
-            gameService.stopTimer();
+            gameService.stopGame();
         }
+    }
+    @Override
+    public void goToGameOver(int finalScore) {
+        Intent goToGameOverIntent = new Intent(this, GameOverActivity.class);
+        goToGameOverIntent.putExtra(FINAL_GAME_SCORE, finalScore);
+        startActivity(goToGameOverIntent);
     }
     @Override
     public boolean isColorblind() {
@@ -92,7 +99,7 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                gameScore.setText(getString(R.string.game_score, Integer.toString(newValue)));
+                gameScore.setText(getString(R.string.game_score, newValue));
             }
         });
     }
