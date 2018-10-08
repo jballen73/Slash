@@ -9,10 +9,8 @@ import android.graphics.Path;
 import android.util.AttributeSet;
 import android.view.View;
 
-import static projects.jballen.slash.Constants.BASE_ARROW_HEIGHT;
-import static projects.jballen.slash.Constants.BASE_ARROW_WIDTH;
-import static projects.jballen.slash.Constants.TOP_ARROW_EXTENSION;
-import static projects.jballen.slash.Constants.TOP_ARROW_HEIGHT;
+import static projects.jballen.slash.Constants.BASE_ARROW_HEIGHT_PERCENT;
+import static projects.jballen.slash.Constants.BASE_ARROW_WIDTH_PERCENT;
 
 /**
  * TODO: document your custom view class.
@@ -22,6 +20,7 @@ public class GameArrow extends View {
     private int directionValue = 8;
     private FlingType direction;
     private Paint arrowPaint;
+    Path arrowPath;
     public GameArrow(Context context) {
         super(context);
         init(null, 0);
@@ -54,6 +53,7 @@ public class GameArrow extends View {
         arrowPaint.setColor(color);
         arrowPaint.setStyle(Paint.Style.FILL);
 
+        arrowPath =  new Path();
         // Update TextPaint and text measurements from attributes
         invalidateTextPaintAndMeasurements();
     }
@@ -66,35 +66,66 @@ public class GameArrow extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        // TODO: consider storing these as member variables to reduce
-        // allocations per draw cycle.
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
         int paddingRight = getPaddingRight();
         int paddingBottom = getPaddingBottom();
 
-        int contentWidth = getWidth() - paddingLeft - paddingRight;
-        int contentHeight = getHeight() - paddingTop - paddingBottom - (int)BASE_ARROW_HEIGHT - (int)TOP_ARROW_HEIGHT;
+        int contentWidth = (getWidth() - paddingLeft - paddingRight);
+        int contentHeight = (getHeight() - paddingTop - paddingBottom);
         canvas.save();
-        canvas.rotate(direction.getRotateAngle(), contentWidth/2, (contentHeight + BASE_ARROW_HEIGHT + TOP_ARROW_HEIGHT)/2);
+        canvas.rotate(direction.getRotateAngle(), contentWidth/2, (contentHeight)/2);
         // Draw the arrow.
         arrowPaint.setColor(color);
-        Path arrowPath = new Path();
-        arrowPath.moveTo((contentWidth)/2, (contentHeight)/2);
-        arrowPath.rLineTo(BASE_ARROW_WIDTH/2, BASE_ARROW_HEIGHT);
-        arrowPath.rLineTo(TOP_ARROW_EXTENSION, 0);
-        arrowPath.rLineTo(-(BASE_ARROW_WIDTH/2 + TOP_ARROW_EXTENSION), TOP_ARROW_HEIGHT);
-        arrowPath.rLineTo(-(BASE_ARROW_WIDTH/2 + TOP_ARROW_EXTENSION), -TOP_ARROW_HEIGHT);
-        arrowPath.rLineTo(TOP_ARROW_EXTENSION, 0);
-        arrowPath.rLineTo(BASE_ARROW_WIDTH/2, -BASE_ARROW_HEIGHT);
+        arrowPath.moveTo(contentWidth / 2, 0);
+        arrowPath.rLineTo(-(contentWidth * BASE_ARROW_WIDTH_PERCENT)/2, contentHeight * BASE_ARROW_HEIGHT_PERCENT);
+        arrowPath.rLineTo(-(contentWidth * (BASE_ARROW_WIDTH_PERCENT)/(2.5f)), 0);
+        arrowPath.rLineTo((contentWidth * (BASE_ARROW_WIDTH_PERCENT)/(2.5f)) + (contentWidth * BASE_ARROW_WIDTH_PERCENT)/2,
+                contentHeight * (1-BASE_ARROW_HEIGHT_PERCENT));
+        arrowPath.rLineTo((contentWidth * (BASE_ARROW_WIDTH_PERCENT)/(2.5f)) + (contentWidth * BASE_ARROW_WIDTH_PERCENT)/2,
+                -contentHeight * (1-BASE_ARROW_HEIGHT_PERCENT));
+        arrowPath.rLineTo(-(contentWidth * (BASE_ARROW_WIDTH_PERCENT)/(2.5f)), 0);
+        arrowPath.rLineTo(-(contentWidth * BASE_ARROW_WIDTH_PERCENT)/2, -contentHeight * BASE_ARROW_HEIGHT_PERCENT);
         canvas.drawPath(arrowPath, arrowPaint);
         canvas.restore();
 
 
     }
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int size;
+        int width = getMeasuredWidth() - getPaddingRight() - getPaddingLeft();
+        int height = getMeasuredHeight() - getPaddingTop() - getPaddingBottom();
+        size = (width > height) ? height : width;
+        setMeasuredDimension(size + getPaddingLeft() + getPaddingRight(),
+                size + getPaddingBottom() + getPaddingTop());
+    }
 
+    /*
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int desiredWidth = getSuggestedMinimumWidth() + getPaddingLeft() + getPaddingRight();
+        int desiredHeight = getSuggestedMinimumHeight() + getPaddingBottom() + getPaddingTop();
+        setMeasuredDimension(measureDimension(desiredWidth, widthMeasureSpec), measureDimension(desiredHeight, heightMeasureSpec));
+    }
+    private int measureDimension(int desiredSize, int measureSpec) {
+        int result;
+        int specMode = MeasureSpec.getMode(measureSpec);
+        int specSize = MeasureSpec.getSize((measureSpec));
+        if (specMode == MeasureSpec.EXACTLY) {
+            result = specSize;
+        } else {
+            result = desiredSize;
+            if (specMode == MeasureSpec.AT_MOST) {
+                result = Math.min(result, specSize);
+            }
+        }
+        return result;
+    }
+    */
     /**
-     * Sets the view's example color attribute value. In the example view, this color
+     * Sets the arrow's color attribute value. In the example view, this color
      * is the font color.
      *
      * @param color The example color attribute value to use.
