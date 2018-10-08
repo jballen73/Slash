@@ -12,12 +12,10 @@ import android.view.View;
 import static projects.jballen.slash.Constants.BASE_ARROW_HEIGHT_PERCENT;
 import static projects.jballen.slash.Constants.BASE_ARROW_WIDTH_PERCENT;
 
-/**
- * TODO: document your custom view class.
- */
 public class GameArrow extends View {
     private int color = Color.BLUE;
     private int directionValue = 8;
+    private int alpha = 255;
     private FlingType direction;
     private Paint arrowPaint;
     Path arrowPath;
@@ -77,6 +75,7 @@ public class GameArrow extends View {
         canvas.rotate(direction.getRotateAngle(), contentWidth/2, (contentHeight)/2);
         // Draw the arrow.
         arrowPaint.setColor(color);
+        arrowPaint.setAlpha(alpha);
         arrowPath.moveTo(contentWidth / 2, 0);
         arrowPath.rLineTo(-(contentWidth * BASE_ARROW_WIDTH_PERCENT)/2, contentHeight * BASE_ARROW_HEIGHT_PERCENT);
         arrowPath.rLineTo(-(contentWidth * (BASE_ARROW_WIDTH_PERCENT)/(2.5f)), 0);
@@ -139,6 +138,10 @@ public class GameArrow extends View {
         this.direction = FlingType.getTypeFromIndex(directionValue);
         invalidateTextPaintAndMeasurements();
 
+    }
+    public void setAlpha(int alpha) {
+        this.alpha = alpha;
+        invalidateTextPaintAndMeasurements();
     }
 
 

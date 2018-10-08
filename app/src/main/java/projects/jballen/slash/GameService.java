@@ -29,17 +29,24 @@ public class GameService extends Service {
     private int score;
     private int maxRedScore;
     private boolean isColorblind;
+    private Timer fadeOutTimer;
+    private TimerTask fadeOutTimerTask;
+    private int alpha;
+    private volatile boolean fadingOut;
     public GameService() {
     }
     public void startGame() {
         isColorblind = callbackInterface.isColorblind();
         currentArrow = makeNewArrow();
-        callbackInterface.setArrow(currentArrow);
+        callbackInterface.setFirstArrow(currentArrow);
         barAmount = 100;
         score = 0;
+        alpha = 255;
+        fadingOut = false;
         maxRedScore = STARTING_MAX_RED_SCORE;
         callbackInterface.updateScore(score);
         timer = new Timer();
+        fadeOutTimer = new Timer();
         currentGameTask = createNewGameTask();
         startTimer();
     }
@@ -54,6 +61,9 @@ public class GameService extends Service {
     }
     public void stopGame() {
         stopTimer();
+        stopFadeOut();
+        fadeOutTimer.cancel();
+        fadeOutTimer.purge();
         callbackInterface.goToGameOver(score);
     }
     private void stopTimer() {
@@ -82,6 +92,7 @@ public class GameService extends Service {
                     barAmount = Math.min(barAmount + SUCCESS_INCREASE, 100);
                     increaseScore();
                     callbackInterface.updateProgressBar(barAmount);
+
                     currentArrow = makeNewArrow();
                     callbackInterface.setArrow(currentArrow);
                     callbackInterface.playSuccessSound(currentArrow.getArrowType());
@@ -104,6 +115,7 @@ public class GameService extends Service {
         }
     }
     private ArrowAttributes makeNewArrow() {
+        alpha = 255;
         int newDirection = gen.nextInt(8);
         int type = gen.nextInt(7);
         ArrowAttributes newArrow;
@@ -141,6 +153,24 @@ public class GameService extends Service {
             }
 
         };
+    }
+    TimerTask createNewFadeOutTask() {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                alpha -= 5;
+                callbackInterface.updateAlpha(alpha);
+            }
+        };
+    }
+    public void fadeOut() {
+        fadeOutTimerTask = createNewFadeOutTask();
+        fadingOut = true;
+        fadeOutTimer.schedule(fadeOutTimerTask, 0, 1);
+    }
+    public void stopFadeOut() {
+        fadeOutTimerTask.cancel();
+        fadingOut = false;
     }
     private void increaseScore() {
         score++;
