@@ -14,6 +14,7 @@ import static projects.jballen.slash.Constants.BASE_ARROW_WIDTH_PERCENT;
 
 public class GameArrow extends View {
     private int color = Color.BLUE;
+    private int borderColor = color;
     private int directionValue = 8;
     private int alpha = 255;
     private FlingType direction;
@@ -76,6 +77,7 @@ public class GameArrow extends View {
         // Draw the arrow.
         arrowPaint.setColor(color);
         arrowPaint.setAlpha(alpha);
+        arrowPaint.setStyle(Paint.Style.FILL);
         arrowPath.moveTo(contentWidth / 2, 0);
         arrowPath.rLineTo(-(contentWidth * BASE_ARROW_WIDTH_PERCENT)/2, contentHeight * BASE_ARROW_HEIGHT_PERCENT);
         arrowPath.rLineTo(-(contentWidth * (BASE_ARROW_WIDTH_PERCENT)/(2.5f)), 0);
@@ -85,6 +87,11 @@ public class GameArrow extends View {
                 -contentHeight * (1-BASE_ARROW_HEIGHT_PERCENT));
         arrowPath.rLineTo(-(contentWidth * (BASE_ARROW_WIDTH_PERCENT)/(2.5f)), 0);
         arrowPath.rLineTo(-(contentWidth * BASE_ARROW_WIDTH_PERCENT)/2, -contentHeight * BASE_ARROW_HEIGHT_PERCENT);
+        canvas.drawPath(arrowPath, arrowPaint);
+        arrowPaint.setColor(borderColor);
+        arrowPaint.setStyle(Paint.Style.STROKE);
+        arrowPaint.setStrokeWidth(10);
+        arrowPaint.setAlpha(alpha/2);
         canvas.drawPath(arrowPath, arrowPaint);
         canvas.restore();
 
@@ -131,6 +138,7 @@ public class GameArrow extends View {
      */
     public void setColor(int color) {
         this.color = color;
+        this.borderColor = color;
         invalidateTextPaintAndMeasurements();
     }
     public void setDirection(int direction) {
@@ -142,6 +150,9 @@ public class GameArrow extends View {
     public void setAlpha(int alpha) {
         this.alpha = alpha;
         invalidateTextPaintAndMeasurements();
+    }
+    public void setBorderColor(int newBorderColor) {
+        this.borderColor = newBorderColor;
     }
 
 

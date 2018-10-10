@@ -2,6 +2,7 @@ package projects.jballen.slash;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -92,13 +93,14 @@ public class GameService extends Service {
                     barAmount = Math.min(barAmount + SUCCESS_INCREASE, 100);
                     increaseScore();
                     callbackInterface.updateProgressBar(barAmount);
-
+                    callbackInterface.setBorder(Color.YELLOW);
                     currentArrow = makeNewArrow();
                     callbackInterface.setArrow(currentArrow);
                     callbackInterface.playSuccessSound(currentArrow.getArrowType());
                 } else {
                     barAmount = Math.max(barAmount + REGULAR_FAILURE_DECREASE, 0);
                     callbackInterface.updateProgressBar(barAmount);
+                    callbackInterface.setBorder(Color.BLACK);
                     currentArrow = makeNewArrow();
                     callbackInterface.setArrow(currentArrow);
                     callbackInterface.playFailureSound();
@@ -107,6 +109,7 @@ public class GameService extends Service {
                 redCount = 0;
                 barAmount = Math.max(barAmount + REGULAR_FAILURE_DECREASE, 0);
                 callbackInterface.updateProgressBar(barAmount);
+                callbackInterface.setBorder(Color.BLACK);
                 ArrowAttributes newArrow = makeNewArrow();
                 currentArrow = newArrow;
                 callbackInterface.setArrow(newArrow);
@@ -145,6 +148,7 @@ public class GameService extends Service {
                     barAmount = Math.max(barAmount - 1, 0);
                     redCount++;
                     if (redCount >= maxRedScore) {
+                        callbackInterface.setBorder(Color.YELLOW);
                         currentArrow = makeNewArrow();
                         callbackInterface.setArrow(currentArrow);
                         redCount = 0;

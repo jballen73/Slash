@@ -178,6 +178,15 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
         });
     }
     @Override
+    public void setBorder(final int borderColor) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                gameArrow.setBorderColor(borderColor);
+            }
+        });
+    }
+    @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
         if (this.mDetector.onTouchEvent(motionEvent)) {
             return true;

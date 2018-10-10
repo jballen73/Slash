@@ -10,4 +10,5 @@ public interface GameCallbackInterface {
     void playFailureSound();
     void updateAlpha(int newAlpha);
     void setFirstArrow(ArrowAttributes attributes);
+    void setBorder(int borerColor);
 }
