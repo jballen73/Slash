@@ -32,8 +32,10 @@ public class GameService extends Service {
     private boolean isColorblind;
     private Timer fadeOutTimer;
     private TimerTask fadeOutTimerTask;
+    private boolean isFading;
     private int alpha;
     private int arrowTypeNum;
+    private boolean gameRunning = false;
     public GameService() {
     }
     public void startGame() {
@@ -49,6 +51,8 @@ public class GameService extends Service {
         timer = new Timer();
         fadeOutTimer = new Timer();
         currentGameTask = createNewGameTask();
+        isFading = false;
+        gameRunning = true;
         startTimer();
     }
     public void startTimer() {
@@ -62,6 +66,7 @@ public class GameService extends Service {
     }
     public void stopGame() {
         stopTimer();
+        gameRunning = false;
         stopFadeOut();
         fadeOutTimer.cancel();
         fadeOutTimer.purge();
@@ -174,11 +179,16 @@ public class GameService extends Service {
         };
     }
     public void fadeOut() {
+        if (!gameRunning) {return;}
         fadeOutTimerTask = createNewFadeOutTask();
         fadeOutTimer.schedule(fadeOutTimerTask, 0, 1);
+        isFading = true;
     }
     public void stopFadeOut() {
-        fadeOutTimerTask.cancel();
+        if (isFading) {
+            fadeOutTimerTask.cancel();
+            isFading = false;
+        }
     }
     private void increaseScore() {
         score++;
@@ -195,6 +205,6 @@ public class GameService extends Service {
     public enum ArrowType {
         REGULAR,
         REVERSE,
-        NOT;
+        NOT
     }
 }
