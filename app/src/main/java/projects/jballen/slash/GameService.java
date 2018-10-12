@@ -2,6 +2,7 @@ package projects.jballen.slash;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
@@ -29,18 +30,29 @@ public class GameService extends Service {
     private int score;
     private int maxRedScore;
     private boolean isColorblind;
+    private Timer fadeOutTimer;
+    private TimerTask fadeOutTimerTask;
+    private boolean isFading;
+    private int alpha;
+    private int arrowTypeNum;
+    private boolean gameRunning = false;
     public GameService() {
     }
     public void startGame() {
         isColorblind = callbackInterface.isColorblind();
+        arrowTypeNum = 4;
         currentArrow = makeNewArrow();
-        callbackInterface.setArrow(currentArrow);
+        callbackInterface.setFirstArrow(currentArrow);
         barAmount = 100;
         score = 0;
+        alpha = 255;
         maxRedScore = STARTING_MAX_RED_SCORE;
         callbackInterface.updateScore(score);
         timer = new Timer();
+        fadeOutTimer = new Timer();
         currentGameTask = createNewGameTask();
+        isFading = false;
+        gameRunning = true;
         startTimer();
     }
     public void startTimer() {
@@ -54,6 +66,10 @@ public class GameService extends Service {
     }
     public void stopGame() {
         stopTimer();
+        gameRunning = false;
+        stopFadeOut();
+        fadeOutTimer.cancel();
+        fadeOutTimer.purge();
         callbackInterface.goToGameOver(score);
     }
     private void stopTimer() {
@@ -82,12 +98,14 @@ public class GameService extends Service {
                     barAmount = Math.min(barAmount + SUCCESS_INCREASE, 100);
                     increaseScore();
                     callbackInterface.updateProgressBar(barAmount);
+                    callbackInterface.setBorder(Color.YELLOW);
                     currentArrow = makeNewArrow();
                     callbackInterface.setArrow(currentArrow);
                     callbackInterface.playSuccessSound(currentArrow.getArrowType());
                 } else {
                     barAmount = Math.max(barAmount + REGULAR_FAILURE_DECREASE, 0);
                     callbackInterface.updateProgressBar(barAmount);
+                    callbackInterface.setBorder(Color.BLACK);
                     currentArrow = makeNewArrow();
                     callbackInterface.setArrow(currentArrow);
                     callbackInterface.playFailureSound();
@@ -96,6 +114,7 @@ public class GameService extends Service {
                 redCount = 0;
                 barAmount = Math.max(barAmount + REGULAR_FAILURE_DECREASE, 0);
                 callbackInterface.updateProgressBar(barAmount);
+                callbackInterface.setBorder(Color.BLACK);
                 ArrowAttributes newArrow = makeNewArrow();
                 currentArrow = newArrow;
                 callbackInterface.setArrow(newArrow);
@@ -104,8 +123,10 @@ public class GameService extends Service {
         }
     }
     private ArrowAttributes makeNewArrow() {
+        alpha = 255;
         int newDirection = gen.nextInt(8);
-        int type = gen.nextInt(7);
+        Log.d("CURRENT_RANDOM_BOUND", Integer.toString(arrowTypeNum));
+        int type = gen.nextInt(arrowTypeNum);
         ArrowAttributes newArrow;
         if (type < 4) {
             newArrow = new ArrowAttributes(FlingType.getTypeFromIndex(newDirection),
@@ -114,8 +135,13 @@ public class GameService extends Service {
             newArrow = new ArrowAttributes(FlingType.getTypeFromIndex(newDirection),
                     ArrowType.REVERSE, isColorblind);
         } else {
-            newArrow = new ArrowAttributes(FlingType.getTypeFromIndex(newDirection),
-                    ArrowType.NOT, isColorblind);
+            if (barAmount > maxRedScore + 5) {
+                newArrow = new ArrowAttributes(FlingType.getTypeFromIndex(newDirection),
+                        ArrowType.NOT, isColorblind);
+            } else {
+                newArrow = new ArrowAttributes(FlingType.getTypeFromIndex(newDirection),
+                        ArrowType.REGULAR, isColorblind);
+            }
         }
         return newArrow;
     }
@@ -127,6 +153,7 @@ public class GameService extends Service {
                     barAmount = Math.max(barAmount - 1, 0);
                     redCount++;
                     if (redCount >= maxRedScore) {
+                        callbackInterface.setBorder(Color.YELLOW);
                         currentArrow = makeNewArrow();
                         callbackInterface.setArrow(currentArrow);
                         redCount = 0;
@@ -142,18 +169,42 @@ public class GameService extends Service {
 
         };
     }
+    TimerTask createNewFadeOutTask() {
+        return new TimerTask() {
+            @Override
+            public void run() {
+                alpha -= 5;
+                callbackInterface.updateAlpha(alpha);
+            }
+        };
+    }
+    public void fadeOut() {
+        if (!gameRunning) {return;}
+        fadeOutTimerTask = createNewFadeOutTask();
+        fadeOutTimer.schedule(fadeOutTimerTask, 0, 1);
+        isFading = true;
+    }
+    public void stopFadeOut() {
+        if (isFading) {
+            fadeOutTimerTask.cancel();
+            isFading = false;
+        }
+    }
     private void increaseScore() {
         score++;
         callbackInterface.updateScore(score);
         if (score > 0 && score % 10 == 0 && currentPeriod > 60) {
             currentPeriod -= 5;
             reStartTimer();
+            if (arrowTypeNum < 7) {
+                arrowTypeNum++;
+            }
         }
     }
 
     public enum ArrowType {
         REGULAR,
         REVERSE,
-        NOT;
+        NOT
     }
 }

@@ -18,6 +18,7 @@ import android.widget.TextView;
 public class GameActivity extends AppCompatActivity implements GestureDetector.OnGestureListener, GameCallbackInterface{
     private GestureDetectorCompat mDetector;
     private GameArrow gameArrow;
+    private ArrowAttributes nextArrow;
     private GameService gameService;
     private boolean isBound = false;
     private boolean colorblindMode;
@@ -143,15 +144,47 @@ public class GameActivity extends AppCompatActivity implements GestureDetector.O
     }
     @Override
     public void setArrow(final ArrowAttributes attributes) {
+        nextArrow = attributes;
+        gameService.fadeOut();
+    }
+    private void switchArrows() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                gameArrow.setDirection(attributes.getArrowDirection().ordinal());
-                gameArrow.setColor(attributes.getColor());
+                gameArrow.setDirection(nextArrow.getArrowDirection().ordinal());
+                gameArrow.setColor(nextArrow.getColor());
+                gameArrow.setAlpha(255);
                 gameArrow.invalidate();
             }
         });
-
+    }
+    @Override
+    public void setFirstArrow(final ArrowAttributes attributes) {
+        nextArrow = attributes;
+        switchArrows();
+    }
+    @Override
+    public void updateAlpha(final int newAlpha) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                gameArrow.setAlpha(newAlpha);
+                gameArrow.invalidate();
+                if (newAlpha <= 0) {
+                    gameService.stopFadeOut();
+                    switchArrows();
+                }
+            }
+        });
+    }
+    @Override
+    public void setBorder(final int borderColor) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                gameArrow.setBorderColor(borderColor);
+            }
+        });
     }
     @Override
     public boolean onTouchEvent(MotionEvent motionEvent) {
