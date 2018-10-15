@@ -28,6 +28,13 @@ public enum FlingType {
     public int getFlingTextId() {return flingTextId;}
     public float getRotateAngle() {return rotateAngle;}
     public static FlingType getTypeFromIndex(int index) {return values()[index];}
+    public static FlingType getRightAdjacent(FlingType flingType) {
+        int index = flingType.ordinal() - 1;
+        return (index == -1) ? DOWN_RIGHT : getTypeFromIndex(index);
+    }
+    public static FlingType getLeftAdjacent(FlingType flingType) {
+        return getTypeFromIndex((flingType.ordinal() + 1) % 8);
+    }
     public static FlingType getOpposite(FlingType flingType){
         switch(flingType) {
             case DOWN:

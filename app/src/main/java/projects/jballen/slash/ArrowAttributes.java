@@ -2,9 +2,11 @@ package projects.jballen.slash;
 
 import android.graphics.Color;
 
+import java.util.HashSet;
+
 public class ArrowAttributes {
     private FlingType arrowDirection;
-    private FlingType correctDirection;
+    private HashSet<FlingType> correctDirections = new HashSet<>();
     private GameService.ArrowType arrowType;
     private int color;
     public ArrowAttributes(FlingType direction, GameService.ArrowType type, boolean isColorblind) {
@@ -12,15 +14,20 @@ public class ArrowAttributes {
         arrowType = type;
         switch(arrowType) {
             case REGULAR:
-                correctDirection = arrowDirection;
+                correctDirections.add(arrowDirection);
+                correctDirections.add(FlingType.getLeftAdjacent(arrowDirection));
+                correctDirections.add(FlingType.getRightAdjacent(arrowDirection));
                 color = Color.BLUE;
                 break;
             case REVERSE:
-                correctDirection = FlingType.getOpposite(arrowDirection);
+                FlingType opposite = FlingType.getOpposite(arrowDirection);
+                correctDirections.add(opposite);
+                correctDirections.add(FlingType.getLeftAdjacent(opposite));
+                correctDirections.add(FlingType.getRightAdjacent(opposite));
                 color = Color.GREEN;
                 break;
             case NOT:
-                correctDirection = FlingType.NONE;
+                correctDirections.add(FlingType.NONE);
                 color = (isColorblind) ? Color.MAGENTA : Color.RED;
                 break;
         }
@@ -30,8 +37,8 @@ public class ArrowAttributes {
         return arrowDirection;
     }
 
-    public FlingType getCorrectDirection() {
-        return correctDirection;
+    public HashSet<FlingType> getCorrectDirections() {
+        return correctDirections;
     }
 
     public GameService.ArrowType getArrowType() {

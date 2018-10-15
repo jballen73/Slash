@@ -94,14 +94,14 @@ public class GameService extends Service {
         Log.d(LOG_STRING_DIRECTION, fling.name());
         if (timerRunning) {
             if (currentArrow.getArrowType() != ArrowType.NOT && fling != FlingType.NONE) {
-                if (fling == currentArrow.getCorrectDirection()) {
+                if (currentArrow.getCorrectDirections().contains(fling)) {
                     barAmount = Math.min(barAmount + SUCCESS_INCREASE, 100);
                     increaseScore();
                     callbackInterface.updateProgressBar(barAmount);
+                    callbackInterface.playSuccessSound(currentArrow.getArrowType());
                     callbackInterface.setBorder(Color.YELLOW);
                     currentArrow = makeNewArrow();
                     callbackInterface.setArrow(currentArrow);
-                    callbackInterface.playSuccessSound(currentArrow.getArrowType());
                 } else {
                     barAmount = Math.max(barAmount + REGULAR_FAILURE_DECREASE, 0);
                     callbackInterface.updateProgressBar(barAmount);
@@ -154,12 +154,13 @@ public class GameService extends Service {
                     redCount++;
                     if (redCount >= maxRedScore) {
                         callbackInterface.setBorder(Color.YELLOW);
+                        callbackInterface.playSuccessSound(currentArrow.getArrowType());
                         currentArrow = makeNewArrow();
                         callbackInterface.setArrow(currentArrow);
                         redCount = 0;
                         barAmount = Math.min(barAmount + maxRedScore + SUCCESS_INCREASE, 100);
                         increaseScore();
-                        callbackInterface.playSuccessSound(currentArrow.getArrowType());
+
                     }
                 } else {
                     barAmount -= 1;
